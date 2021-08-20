@@ -14,36 +14,7 @@ import {
   CardHeader,
   CardBody
 } from "reactstrap";
-import { vis } from "vis/dist/vis-timeline-graph2d.min";
 
-
-/**
- * Define the timeline here as a react component
- */
-const timeline = <Timeline />
-
-
-render()
-
-/**
- * Renders the UI
- */
-async function render() {
-  let initData = await OrderService.fetchInitialData()
-  // let groups = initData.groups.get()
-  // let items = initData.items.get()
-  const rootElement = document.getElementById("root");
-
-  // let timeline = new Timeline()
-
-  // ReactDOM.render(<div>{timeline}</div>, rootElement);
-
-
-  ReactDOM.render(<DisplayComponent />, rootElement);
-
-  // timeline.setProperties({ "groups": groups });
-
-}
 
 
 
@@ -57,10 +28,19 @@ class DisplayComponent extends Component {
       items: OrderService.createDataSet(),
       groups: OrderService.createDataSet()
     };
+
+    const thisComp = this;
+
+    this.timelineOptions = TimelineOptions
+    this.timelineOptions.onMove = function (item, callback) { thisComp.itemMoved(item, callback) }
+    this.timelineOptions.onRemove = function (item, callback) { thisComp.itemRemoved(item, callback) }
+    this.timelineOptions.onAdd = function (item, callback) { thisComp.itemAdded(item, callback) }
+    this.timelineOptions.onUpdate = function (item, callback) { thisComp.itemUpdated(item, callback) }
+    console.log(this.timelineOptions)
   }
 
   componentDidMount() {
-    let initData = OrderService.fetchInitialData()
+    OrderService.fetchInitialData()
       .then(
         (result) => {
           this.setState({
@@ -71,12 +51,37 @@ class DisplayComponent extends Component {
         })
   }
 
+  itemMoved(item, callback) {
+    console.log(item)
+  }
+
+  itemRemoved(item, callback) {
+    // this.state.items.remove(item)
+    this.setState(state => ({ items: this.items }))
+  }
+
+  itemAdded(item, callback) {
+    console.log(item)
+  }
+
+  itemUpdated(item, callback) {
+    console.log(item)
+  }
+
+  refreshItem(item) {
+
+  }
+
   setItems(items) {
-    this.props.items = items;
+    this.setState(state => ({ items: items }))
+  }
+
+  setGroups(groups) {
+    this.setState(state => ({ groups: groups }))
   }
 
   clearItems() {
-    this.setState(state => ({items : OrderService.createDataSet()}))
+    this.setState(state => ({ items: OrderService.createDataSet() }))
   }
 
   render() {
@@ -93,8 +98,20 @@ class DisplayComponent extends Component {
         </Card>
       </div>
     );
-
-    setTimeout(() => this.clearItems(), 5000);
     return x;
   }
 }
+
+//
+//
+//
+//
+//              Logic
+//
+//
+//
+//
+
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<DisplayComponent />, rootElement);

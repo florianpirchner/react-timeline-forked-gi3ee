@@ -8,8 +8,8 @@ export const Properties = {
 export const TimelineOptions = {
     editable: {
       add: true,
-      remove: false,
-      updateGroup: false,
+      remove: true,
+      updateGroup: true,
       updateTime: true
     },
   
